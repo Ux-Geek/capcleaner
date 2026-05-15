@@ -39,9 +39,8 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
         <div className="relative">
           <div className="z-10 relative">
             <Logo 
-              color={isRevealed ? "#fb8500" : "#f9dcc4"} 
+              isRevealed={isRevealed}
               size={140} 
-              animate={true} 
             />
           </div>
 
@@ -70,7 +69,7 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
           transition={{ delay: 2 }}
         >
           <motion.p 
-            className="text-[#fb8500] font-medium tracking-[0.2em] text-sm uppercase"
+            className="text-[#444444] font-medium tracking-[0.2em] text-sm uppercase"
             initial={{ y: 40 }}
             animate={{ y: isRevealed ? 0 : 40 }}
             transition={{ duration: 1, ease: "easeOut", delay: 1.5 }}
@@ -82,7 +81,7 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
 
       {/* Decorative Elements */}
       <motion.div
-        className="absolute top-0 left-0 w-full h-1 bg-[#fb8500]/20"
+        className="absolute top-0 left-0 w-full h-1 bg-[#444444]/20"
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ duration: 3, ease: "linear" }}
