@@ -189,7 +189,7 @@ export default function VideoEditor({ file, onReset }: Props) {
         </div>
       </header>
 
-      <main className="flex-1 flex overflow-hidden flex-row">
+      <main className="flex-1 flex overflow-hidden flex-col-reverse md:flex-row">
         {/* Editor Sidebar */}
         <EditorSidebar 
           boxes={boxes}
