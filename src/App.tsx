@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import UploadDropzone from "./components/UploadDropzone";
 import VideoEditor from "./components/VideoEditor";
 import SplashPage from "./components/SplashPage";
+import Logo from "./components/Logo";
 import { motion, AnimatePresence } from "motion/react";
 
 export default function App() {
@@ -9,11 +10,23 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true);
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-white font-sans selection:bg-blue-500/30">
+    <main className="min-h-screen bg-neutral-950 text-white font-sans selection:bg-blue-500/30 pt-12 md:pt-20">
       <AnimatePresence mode="wait">
         {showSplash ? (
           <SplashPage key="splash" onComplete={() => setShowSplash(false)} />
-        ) : !file ? (
+        ) : (
+          <div className="max-w-7xl mx-auto px-6">
+            <motion.header 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="flex items-center gap-3 mb-12"
+            >
+              <Logo color="#fb8500" size={32} />
+              <h1 className="text-xl font-medium tracking-tight">CapCleaner</h1>
+            </motion.header>
+
+            {!file ? (
           <motion.div
             key="upload"
             initial={{ opacity: 0 }}
@@ -35,6 +48,8 @@ export default function App() {
               onReset={() => setFile(null)} 
             />
           </motion.div>
+            )}
+          </div>
         )}
       </AnimatePresence>
 
