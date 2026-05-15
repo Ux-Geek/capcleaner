@@ -1,20 +1,17 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { Stage, Layer } from "react-konva";
 import { 
-  Plus, 
-  Trash2, 
   Play, 
   Pause, 
   ArrowLeft, 
-  Download, 
   Loader2, 
-  Sparkles,
-  LayoutTemplate
+  Sparkles
 } from "lucide-react";
 import type { RemovalBox, VideoDimensions } from "../types/editor";
 import { exportCleanVideo } from "../lib/exportVideo";
 import DraggableBox from "./DraggableBox";
-import { motion, AnimatePresence } from "motion/react";
+import EditorSidebar from "./EditorSidebar";
+import ExportOverlay from "./ExportOverlay";
 
 interface Props {
   file: File;
@@ -157,134 +154,78 @@ export default function VideoEditor({ file, onReset }: Props) {
   return (
     <div className="flex flex-col h-screen bg-neutral-950 overflow-hidden">
       {/* Top Bar */}
-      <header className="h-16 border-b border-neutral-800 flex items-center justify-between px-6 bg-neutral-900/50 backdrop-blur-md z-10">
-        <div className="flex items-center gap-4">
+      <header className="h-14 md:h-16 border-b border-neutral-800 flex items-center justify-between px-2 md:px-6 bg-neutral-900/50 backdrop-blur-md z-10 shrink-0">
+        <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
           <button 
             onClick={onReset}
-            className="p-2 hover:bg-neutral-800 rounded-lg transition-colors text-neutral-400 hover:text-white"
+            className="p-2 hover:bg-neutral-800 rounded-lg transition-colors text-neutral-400 hover:text-white shrink-0"
           >
             <ArrowLeft size={20} />
           </button>
-          <div className="h-4 w-[1px] bg-neutral-800" />
-          <h1 className="font-semibold text-white tracking-tight">
+          <div className="h-4 w-[1px] bg-neutral-800 shrink-0" />
+          <h1 className="font-semibold text-white tracking-tight truncate text-sm md:text-base">
             {file.name}
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0 ml-2">
           <button
             onClick={handleExport}
             disabled={isExporting}
-            className="flex items-center gap-2 px-5 py-2 bg-white text-black font-semibold rounded-full hover:bg-neutral-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2 bg-white text-black font-semibold rounded-full hover:bg-neutral-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
           >
             {isExporting ? (
-              <Loader2 className="animate-spin" size={18} />
+              <Loader2 className="animate-spin" size={16} />
             ) : (
-              <Sparkles size={18} />
+              <Sparkles size={16} />
             )}
-            {isExporting ? `Exporting ${exportProgress}%` : "Export Clean Video"}
+            <span className="hidden md:inline">
+              {isExporting ? `Exporting ${exportProgress}%` : "Export Clean Video"}
+            </span>
+            <span className="md:hidden">
+              {isExporting ? `${exportProgress}%` : "Export"}
+            </span>
           </button>
         </div>
       </header>
 
-      <main className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar */}
-        <aside className="w-80 border-r border-neutral-800 bg-neutral-900/20 p-6 flex flex-col gap-8 overflow-y-auto">
-          <div className="space-y-4">
-            <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest px-2">Tools</h2>
-            <button 
-              onClick={addBox}
-              className="w-full flex items-center gap-3 px-4 py-3 bg-neutral-800 hover:bg-neutral-700 rounded-xl text-white transition-all border border-neutral-700"
-            >
-              <Plus size={20} />
-              <span>Add Blur Zone</span>
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between px-2">
-              <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Presets</h2>
-              <LayoutTemplate size={14} className="text-neutral-500" />
-            </div>
-            <div className="grid grid-cols-1 gap-2">
-              <button 
-                onClick={() => applyTemplate('tiktok-top')}
-                className="w-full text-left px-4 py-2 hover:bg-neutral-800 rounded-lg text-sm text-neutral-400 hover:text-white transition-colors"
-              >
-                TikTok Top Header
-              </button>
-              <button 
-                onClick={() => applyTemplate('tiktok-bottom')}
-                className="w-full text-left px-4 py-2 hover:bg-neutral-800 rounded-lg text-sm text-neutral-400 hover:text-white transition-colors"
-              >
-                TikTok Bottom Caption
-              </button>
-              <button 
-                onClick={() => applyTemplate('reels')}
-                className="w-full text-left px-4 py-2 hover:bg-neutral-800 rounded-lg text-sm text-neutral-400 hover:text-white transition-colors"
-              >
-                Center Overlay
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-4 flex-1">
-            <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest px-2">Active Zones</h2>
-            <div className="space-y-2">
-              <AnimatePresence>
-                {boxes.map((box, idx) => (
-                  <motion.div
-                    key={box.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    className={`
-                      group flex items-center justify-between px-4 py-3 rounded-xl border transition-all cursor-pointer
-                      ${selectedId === box.id 
-                        ? 'bg-blue-500/10 border-blue-500/50' 
-                        : 'bg-neutral-900 border-neutral-800 hover:border-neutral-700'
-                      }
-                    `}
-                    onClick={() => setSelectedId(box.id)}
-                  >
-                    <span className="text-sm text-white">Zone #{idx + 1}</span>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); removeBox(box.id); }}
-                      className="p-1.5 opacity-0 group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-500 rounded-md transition-all"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              {boxes.length === 0 && (
-                <div className="text-center py-8 px-4 rounded-2xl border border-dotted border-neutral-800 text-neutral-600 text-sm italic">
-                  No zones added yet.
-                </div>
-              )}
-            </div>
-          </div>
-        </aside>
+      <main className="flex-1 flex overflow-hidden flex-row">
+        {/* Editor Sidebar */}
+        <EditorSidebar 
+          boxes={boxes}
+          selectedId={selectedId}
+          onAddBox={addBox}
+          onRemoveBox={removeBox}
+          onSelectBox={setSelectedId}
+          onApplyTemplate={applyTemplate}
+        />
 
         {/* Editor Stage */}
-        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-from)_0%,_transparent_100%)] from-neutral-900/50">
-          <div ref={containerRef} className="relative max-w-full max-h-full aspect-auto rounded-2xl overflow-hidden shadow-2xl bg-black border border-neutral-800">
+        <div className="flex-1 flex flex-col items-center justify-center p-2 md:p-8 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-from)_0%,_transparent_100%)] from-neutral-900/50 relative">
+          <div ref={containerRef} className="relative w-full max-w-full h-full max-h-full flex items-center justify-center rounded-lg md:rounded-2xl overflow-hidden shadow-2xl bg-black border border-neutral-800">
             <video
               ref={videoRef}
               src={videoUrl}
               onLoadedMetadata={handleLoadedMetadata}
-              className="max-h-[70vh] w-auto display-block"
+              className="max-h-full max-w-full object-contain"
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
+              playsInline
             />
             {previewDims && (
-              <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 <Stage 
                   width={previewDims.width} 
                   height={previewDims.height}
                   className="pointer-events-auto"
                   onMouseDown={(e) => {
                     // deselect when clicked on empty area
+                    const clickedOnEmpty = e.target === e.target.getStage();
+                    if (clickedOnEmpty) {
+                      setSelectedId(null);
+                    }
+                  }}
+                  onTouchStart={(e) => {
                     const clickedOnEmpty = e.target === e.target.getStage();
                     if (clickedOnEmpty) {
                       setSelectedId(null);
@@ -309,18 +250,18 @@ export default function VideoEditor({ file, onReset }: Props) {
             )}
 
             {/* In-Video Controls */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 px-6 py-3 rounded-full bg-neutral-900/80 backdrop-blur-xl border border-neutral-800/50 shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 px-4 py-2 md:px-6 md:py-3 rounded-full bg-neutral-900/80 backdrop-blur-xl border border-neutral-800/50 shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300">
               <button 
                 onClick={togglePlay}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-black hover:scale-105 active:scale-95 transition-all"
+                className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-white text-black hover:scale-105 active:scale-95 transition-all"
               >
-                {isPlaying ? <Pause size={20} /> : <Play size={20} fill="currentColor" />}
+                {isPlaying ? <Pause size={16} className="md:w-5 md:h-5" /> : <Play size={16} className="md:w-5 md:h-5" fill="currentColor" />}
               </button>
             </div>
           </div>
 
-          <div className="mt-8 text-center max-w-md">
-            <p className="text-neutral-500 text-sm">
+          <div className="mt-2 md:mt-8 text-center max-w-md hidden md:block">
+            <p className="text-neutral-500 text-xs md:text-sm">
               Press <span className="text-neutral-300 font-mono">SPACE</span> to play/pause. Drag boxes to mark text. Use handles to resize.
             </p>
           </div>
@@ -328,50 +269,11 @@ export default function VideoEditor({ file, onReset }: Props) {
       </main>
 
       {/* Export Overlay */}
-      <AnimatePresence>
-        {exportUrl && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="w-full max-w-2xl bg-neutral-900 rounded-3xl border border-neutral-800 overflow-hidden shadow-2xl"
-            >
-              <div className="p-8 space-y-8">
-                <div className="text-center space-y-2">
-                  <h3 className="text-2xl font-bold text-white">Your Video is Clean!</h3>
-                  <p className="text-neutral-400">The captions have been removed and blurred locally.</p>
-                </div>
-
-                <div className="aspect-video bg-black rounded-2xl overflow-hidden border border-neutral-800">
-                  <video src={exportUrl} controls className="w-full h-full" />
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <a
-                    href={exportUrl}
-                    download={`cleaned-${file.name}`}
-                    className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-white text-black font-bold rounded-2xl hover:bg-neutral-200 transition-all shadow-xl shadow-white/5"
-                  >
-                    <Download size={20} />
-                    Download Optimized MP4
-                  </a>
-                  <button 
-                    onClick={() => setExportUrl(null)}
-                    className="px-8 py-4 bg-neutral-800 text-white font-bold rounded-2xl hover:bg-neutral-700 transition-all"
-                  >
-                    Back to Editor
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ExportOverlay 
+        exportUrl={exportUrl}
+        fileName={file.name}
+        onClose={() => setExportUrl(null)}
+      />
     </div>
   );
 }
