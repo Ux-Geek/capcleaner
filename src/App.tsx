@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UploadDropzone from "./components/UploadDropzone";
 import VideoEditor from "./components/VideoEditor";
+import SplashPage from "./components/SplashPage";
 import { motion, AnimatePresence } from "motion/react";
 
 export default function App() {
   const [file, setFile] = useState<File | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
 
   return (
     <main className="min-h-screen bg-neutral-950 text-white font-sans selection:bg-blue-500/30">
       <AnimatePresence mode="wait">
-        {!file ? (
+        {showSplash ? (
+          <SplashPage key="splash" onComplete={() => setShowSplash(false)} />
+        ) : !file ? (
           <motion.div
             key="upload"
             initial={{ opacity: 0 }}
