@@ -14,7 +14,7 @@ export default function Logo({
   bgMode = true
 }: LogoProps) {
   // Splash background color (to hide the logo initially)
-  const bgColor = "#f9dcc4";
+  const bgColor = "#f3f4f6";
   
   // Target colors
   const targetFill = bgMode ? "white" : "white";

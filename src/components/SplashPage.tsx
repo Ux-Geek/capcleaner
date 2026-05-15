@@ -26,7 +26,7 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#f9dcc4] overflow-hidden"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#f3f4f6] overflow-hidden"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 1, ease: "easeInOut" }}
@@ -47,13 +47,13 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
           {/* Vertical Mask Reveal Panels */}
           <div className="absolute inset-0 z-20 flex flex-col pointer-events-none">
             <motion.div
-              className="flex-1 bg-[#f9dcc4]"
+              className="flex-1 bg-[#f3f4f6]"
               initial={{ height: "50%" }}
               animate={{ height: isRevealed ? "0%" : "50%" }}
               transition={{ duration: 1.2, ease: [0.85, 0, 0.15, 1] }}
             />
             <motion.div
-              className="flex-1 bg-[#f9dcc4]"
+              className="flex-1 bg-[#f3f4f6]"
               initial={{ height: "50%" }}
               animate={{ height: isRevealed ? "0%" : "50%" }}
               transition={{ duration: 1.2, ease: [0.85, 0, 0.15, 1] }}
