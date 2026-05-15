@@ -45,15 +45,17 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
           </div>
 
           {/* Vertical Mask Reveal Panels */}
-          <div className="absolute inset-0 z-20 flex flex-col pointer-events-none">
+          <div className="absolute inset-0 z-20 pointer-events-none">
+            {/* Top mask */}
             <motion.div
-              className="flex-1 bg-[#f3f4f6]"
+              className="absolute top-0 left-0 w-full bg-[#f3f4f6]"
               initial={{ height: "50%" }}
               animate={{ height: isRevealed ? "0%" : "50%" }}
               transition={{ duration: 1.2, ease: [0.85, 0, 0.15, 1] }}
             />
+            {/* Bottom mask */}
             <motion.div
-              className="flex-1 bg-[#f3f4f6]"
+              className="absolute bottom-0 left-0 w-full bg-[#f3f4f6]"
               initial={{ height: "50%" }}
               animate={{ height: isRevealed ? "0%" : "50%" }}
               transition={{ duration: 1.2, ease: [0.85, 0, 0.15, 1] }}
