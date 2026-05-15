@@ -1,0 +1,6 @@
+{
+  "name": "Caption Cleaner",
+  "description": "Remove captions, text overlays, and labels from your own videos using local browser-based processing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
